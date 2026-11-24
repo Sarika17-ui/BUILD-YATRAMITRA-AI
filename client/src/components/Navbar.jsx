@@ -11,7 +11,10 @@ import {
   Users, 
   Mic, 
   ShieldCheck,
-  Building2
+  Building2,
+  Ticket,
+  Type,
+  Home
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -20,6 +23,8 @@ export default function Navbar() {
     toggleLanguage,
     isBuzurgMode,
     toggleBuzurgMode,
+    fontSize,
+    cycleFontSize,
     selectedTempleId,
     setSelectedTempleId,
     currentTemple,
@@ -35,6 +40,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/60 shadow-sm transition-all duration-200">
+      
       {/* Top emergency & accessibility bar */}
       <div className="bg-[#0F4C5C] text-white px-3 sm:px-6 py-1.5 flex items-center justify-between text-xs sm:text-sm font-medium">
         <div className="flex items-center gap-2">
@@ -44,7 +50,20 @@ export default function Navbar() {
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          
+          {/* Font Size Adjuster Button */}
+          <button
+            onClick={cycleFontSize}
+            className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-2 py-0.5 rounded-lg text-xs font-bold transition"
+            title="Adjust Font Size (Normal / Large / Extra Large)"
+          >
+            <Type className="w-3.5 h-3.5 text-amber-300" />
+            <span className="uppercase text-[10px]">
+              {fontSize === 'xlarge' ? 'A++' : fontSize === 'large' ? 'A+' : 'A'}
+            </span>
+          </button>
+
           {/* Read aloud helper status */}
           {isSpeaking && (
             <button
@@ -59,7 +78,10 @@ export default function Navbar() {
 
           {/* Quick SOS Trigger in Header */}
           <button
-            onClick={() => setIsSOSOpen(true)}
+            onClick={() => {
+              setActiveTab('emergency');
+              setIsSOSOpen(true);
+            }}
             className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-2.5 py-0.5 rounded-full font-bold text-xs tracking-wider shadow-sm transition animate-pulse"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
@@ -69,32 +91,33 @@ export default function Navbar() {
       </div>
 
       {/* Main navigation container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-4">
+        
         {/* Brand & Logo */}
         <div 
-          onClick={() => setActiveTab('home')}
-          className="flex items-center gap-3 cursor-pointer group select-none"
+          onClick={() => setActiveTab('landing')}
+          className="flex items-center gap-3 cursor-pointer group select-none shrink-0"
         >
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-[#0F4C5C] to-[#114B5F] p-0.5 shadow-md flex items-center justify-center text-white ring-2 ring-amber-400/50">
-            <span className="text-2xl sm:text-3xl font-heading text-amber-300">🕉️</span>
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-[#0F4C5C] to-[#114B5F] p-0.5 shadow-md flex items-center justify-center text-white ring-2 ring-amber-400/50">
+            <span className="text-xl sm:text-2xl font-heading text-amber-300">🕉️</span>
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-xl sm:text-2xl font-bold font-devanagari tracking-tight text-[#0F4C5C]">
+              <span className="text-lg sm:text-xl font-bold font-devanagari tracking-tight text-[#0F4C5C]">
                 यात्रामित्र <span className="text-[#E36414]">AI</span>
               </span>
               <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-amber-100 text-[#E36414] border border-amber-300">
                 सुगम
               </span>
             </div>
-            <p className="text-xs text-slate-500 font-medium">
-              {currentTemple?.name_hi?.slice(0, 26)}
+            <p className="text-[11px] text-slate-500 font-medium hidden sm:block">
+              {currentTemple?.name_hi?.slice(0, 24)}
             </p>
           </div>
         </div>
 
-        {/* Temple Selector Pills */}
-        <div className="hidden md:flex items-center gap-1.5 bg-[#FAF6EE] p-1.5 rounded-2xl border border-amber-200/80">
+        {/* Temple Selector Pills (Desktop) */}
+        <div className="hidden lg:flex items-center gap-1.5 bg-[#FAF6EE] p-1.5 rounded-2xl border border-amber-200/80">
           {temples.map((t) => {
             const isSelected = t.id === selectedTempleId;
             return (
@@ -117,12 +140,13 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Actions & Toggles: Buzurg Mode, Language, Voice */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Buzurg Mode (Elderly Mode) Switch - Big and unmistakable */}
+        {/* Action Controls: Buzurg Mode, Language, Voice */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          
+          {/* Buzurg Mode (Elderly Mode) Toggle */}
           <button
             onClick={toggleBuzurgMode}
-            className={`flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl font-bold transition-all duration-200 shadow-sm border ${
+            className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl font-bold transition-all duration-200 shadow-sm border ${
               isBuzurgMode
                 ? 'bg-amber-500 text-white border-amber-600 ring-4 ring-amber-200'
                 : 'bg-amber-50 text-[#5C3D2E] border-amber-300 hover:bg-amber-100'
@@ -130,12 +154,12 @@ export default function Navbar() {
             title="Toggle Elderly Friendly Buzurg Mode"
           >
             <HeartHandshake className={`w-5 h-5 ${isBuzurgMode ? 'animate-bounce text-white' : 'text-[#E36414]'}`} />
-            <div className="text-left">
-              <span className="block text-xs sm:text-sm leading-tight">
+            <div className="text-left hidden sm:block">
+              <span className="block text-xs leading-tight">
                 {language === 'hi' ? 'बुजुर्ग मोड' : 'Senior Mode'}
               </span>
-              <span className={`text-[10px] block leading-none ${isBuzurgMode ? 'text-amber-100' : 'text-slate-500'}`}>
-                {isBuzurgMode ? (language === 'hi' ? 'सक्रिय है' : 'Active') : (language === 'hi' ? 'सरल व बड़े अक्षर' : 'Large & Easy')}
+              <span className={`text-[9px] block leading-none ${isBuzurgMode ? 'text-amber-100 font-bold' : 'text-slate-500'}`}>
+                {isBuzurgMode ? 'सक्रिय है' : 'सरल व बड़े अक्षर'}
               </span>
             </div>
           </button>
@@ -143,91 +167,127 @@ export default function Navbar() {
           {/* Language Switch */}
           <button
             onClick={toggleLanguage}
-            className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-semibold transition"
+            className="flex items-center gap-1 px-2.5 py-1.5 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition"
             title="Switch Language"
           >
-            <Languages className="w-4 h-4 text-[#0F4C5C]" />
+            <Languages className="w-3.5 h-3.5 text-[#0F4C5C]" />
             <span>{language === 'hi' ? 'EN' : 'हिंदी'}</span>
           </button>
 
-          {/* Floating/Navbar Voice Button */}
+          {/* Voice Assistant Trigger */}
           <button
-            onClick={() => setIsVoiceModalOpen(true)}
-            className="flex items-center gap-1.5 bg-[#E36414] hover:bg-[#C84C04] text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition transform active:scale-95"
+            onClick={() => setActiveTab('voice')}
+            className="flex items-center gap-1.5 bg-[#E36414] hover:bg-[#C84C04] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-2xl font-bold text-xs shadow-md hover:shadow-lg transition transform active:scale-95"
           >
             <Mic className="w-4 h-4 animate-pulse" />
-            <span className="hidden sm:inline">{language === 'hi' ? 'बोलो यात्रा' : 'Voice Guide'}</span>
+            <span className="hidden sm:inline">{language === 'hi' ? 'बोलो यात्रा' : 'Voice'}</span>
           </button>
         </div>
       </div>
 
-      {/* Mobile temple selector bar */}
-      <div className="flex md:hidden overflow-x-auto py-1.5 px-4 bg-[#FAF6EE] border-t border-amber-200/40 gap-2 no-scrollbar">
-        {temples.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => {
-              setSelectedTempleId(t.id);
-              speakText(`${t.name_hi} चुना गया।`);
-            }}
-            className={`whitespace-nowrap px-3 py-1 rounded-xl text-xs font-semibold shrink-0 transition ${
-              t.id === selectedTempleId
-                ? 'bg-[#0F4C5C] text-white shadow-xs'
-                : 'bg-white text-slate-700 border border-amber-200'
-            }`}
-          >
-            {language === 'hi' ? t.name_hi.split(' ')[1] || t.name_hi : t.name_en.split(' ')[1] || t.name_en}
-          </button>
-        ))}
-      </div>
+      {/* Primary Desktop Navigation Bar with 9 Pages */}
+      <div className="border-t border-slate-100 bg-[#FAF7F2] overflow-x-auto no-scrollbar">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-1 sm:space-x-2 py-1 text-xs sm:text-sm font-semibold whitespace-nowrap">
+            
+            <button
+              onClick={() => setActiveTab('landing')}
+              className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
+                activeTab === 'landing'
+                  ? 'bg-[#0F4C5C] text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-[#0F4C5C] hover:bg-amber-100/50'
+              }`}
+            >
+              <span>🚩</span>
+              <span>{language === 'hi' ? 'परिचय' : 'Landing'}</span>
+            </button>
 
-      {/* Secondary Navigation Tabs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 flex items-center justify-between overflow-x-auto no-scrollbar">
-        <nav className="flex space-x-1 sm:space-x-4 py-1.5 text-xs sm:text-sm font-semibold">
-          <button
-            onClick={() => setActiveTab('home')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              activeTab === 'home'
-                ? 'bg-[#0F4C5C]/10 text-[#0F4C5C] font-bold'
-                : 'text-slate-600 hover:text-[#0F4C5C]'
-            }`}
-          >
-            🏠 {language === 'hi' ? 'मुख्य पृष्ठ' : 'Home'}
-          </button>
+            <button
+              onClick={() => setActiveTab('home')}
+              className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
+                activeTab === 'home'
+                  ? 'bg-[#0F4C5C] text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-[#0F4C5C] hover:bg-amber-100/50'
+              }`}
+            >
+              <Home className="w-4 h-4" />
+              <span>{language === 'hi' ? 'डैशबोर्ड' : 'Dashboard'}</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('facilities')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              activeTab === 'facilities'
-                ? 'bg-[#0F4C5C]/10 text-[#0F4C5C] font-bold'
-                : 'text-slate-600 hover:text-[#0F4C5C]'
-            }`}
-          >
-            📍 {language === 'hi' ? 'कहाँ क्या है? (सुविधाएं)' : 'Campus Facilities'}
-          </button>
+            <button
+              onClick={() => setActiveTab('voice')}
+              className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
+                activeTab === 'voice'
+                  ? 'bg-[#0F4C5C] text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-[#0F4C5C] hover:bg-amber-100/50'
+              }`}
+            >
+              <Mic className="w-4 h-4 text-[#E36414]" />
+              <span>{language === 'hi' ? 'बोलो यात्रा' : 'Voice'}</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('family')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              activeTab === 'family'
-                ? 'bg-[#0F4C5C]/10 text-[#0F4C5C] font-bold'
-                : 'text-slate-600 hover:text-[#0F4C5C]'
-            }`}
-          >
-            👨‍👩‍👧‍👦 {language === 'hi' ? 'परिवार रक्षक' : 'Family Companion'}
-          </button>
+            <button
+              onClick={() => setActiveTab('darshan')}
+              className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
+                activeTab === 'darshan'
+                  ? 'bg-[#0F4C5C] text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-[#0F4C5C] hover:bg-amber-100/50'
+              }`}
+            >
+              <Ticket className="w-4 h-4 text-emerald-600" />
+              <span>{language === 'hi' ? 'सुगम दर्शन व टोकन' : 'Smart Darshan'}</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('control-room')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              activeTab === 'control-room'
-                ? 'bg-[#0F4C5C]/10 text-[#0F4C5C] font-bold'
-                : 'text-slate-600 hover:text-[#0F4C5C]'
-            }`}
-          >
-            📊 {language === 'hi' ? 'प्रशासन नियंत्रण कक्ष' : 'Control Room'}
-          </button>
-        </nav>
+            <button
+              onClick={() => setActiveTab('guide')}
+              className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
+                activeTab === 'guide'
+                  ? 'bg-[#0F4C5C] text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-[#0F4C5C] hover:bg-amber-100/50'
+              }`}
+            >
+              <MapPin className="w-4 h-4 text-teal-600" />
+              <span>{language === 'hi' ? 'मंदिर गाइड (कहाँ क्या है)' : 'Temple Guide'}</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('saathi')}
+              className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
+                activeTab === 'saathi'
+                  ? 'bg-[#0F4C5C] text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-[#0F4C5C] hover:bg-amber-100/50'
+              }`}
+            >
+              <Users className="w-4 h-4 text-indigo-600" />
+              <span>{language === 'hi' ? 'साथी सर्कल (परिवार)' : 'Saathi Circle'}</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('emergency')}
+              className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
+                activeTab === 'emergency'
+                  ? 'bg-red-600 text-white font-bold shadow-xs'
+                  : 'text-red-700 hover:bg-red-50'
+              }`}
+            >
+              <AlertTriangle className="w-4 h-4 text-red-500" />
+              <span>{language === 'hi' ? 'आपातकाल SOS' : 'Emergency Help'}</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('admin')}
+              className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ml-auto ${
+                activeTab === 'admin'
+                  ? 'bg-slate-900 text-amber-300 font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+              }`}
+            >
+              <Building2 className="w-4 h-4 text-amber-500" />
+              <span>{language === 'hi' ? 'प्रशासन केंद्र' : 'Admin'}</span>
+            </button>
+
+          </nav>
+        </div>
       </div>
     </header>
   );

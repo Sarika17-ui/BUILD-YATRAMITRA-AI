@@ -2,15 +2,18 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 
 const AppContext = createContext();
 
-// Default offline/fallback temple data so client runs instantly
+// Authentic Temple Data for the 4 Prime Pilgrimages
 export const FALLBACK_TEMPLES = [
   {
     id: "somnath",
     name_hi: "श्री सोमनाथ ज्योतिर्लिंग मंदिर",
     name_en: "Shree Somnath Jyotirlinga Temple",
     deity: "भगवान शिव (प्रथम ज्योतिर्लिंग)",
-    location_hi: "प्रभास पाटन, वेरावल, गुजरात",
+    location_hi: "प्रभास पाटन, वेरावल, सौराष्ट्र, गुजरात",
     location_en: "Prabhas Patan, Veraval, Gujarat",
+    short_desc_hi: "बारह ज्योतिर्लिंगों में प्रथम, अरब सागर के तट पर स्थित भव्य एवं पावन धाम।",
+    short_desc_en: "First of the 12 sacred Jyotirlingas, situated serenely on the Arabian Sea coast.",
+    image: "https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=1200&q=80",
     capacity: 18000,
     current_devotees: 6850,
     occupancy_pct: 38,
@@ -54,6 +57,9 @@ export const FALLBACK_TEMPLES = [
     deity: "भगवान श्रीकृष्ण (द्वारकाधीश)",
     location_hi: "द्वारका, देवभूमि द्वारका, गुजरात",
     location_en: "Dwarka, Devbhumi Dwarka, Gujarat",
+    short_desc_hi: "चार धामों एवं सप्त पुरियों में प्रमुख, मोक्ष प्रदाता भगवान श्री कृष्ण का दिव्य धाम।",
+    short_desc_en: "One of the sacred Char Dhams, the sublime kingdom of Lord Krishna.",
+    image: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
     capacity: 15000,
     current_devotees: 8400,
     occupancy_pct: 56,
@@ -96,6 +102,9 @@ export const FALLBACK_TEMPLES = [
     deity: "माँ अम्बा (51 शक्तिपीठों में प्रधान)",
     location_hi: "अम्बाजी, दांता तालुका, बनासकांठा, गुजरात",
     location_en: "Ambaji, Banaskantha, Gujarat",
+    short_desc_hi: "प्रसिद्ध शक्तिपीठ जहाँ माँ का हृदय गिरा था, श्रीयंत्र स्वरूप दिव्य पूजन।",
+    short_desc_en: "Revered prime Shaktipeeth where the holy Heart of Devi Sati resides.",
+    image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1200&q=80",
     capacity: 22000,
     current_devotees: 11200,
     occupancy_pct: 51,
@@ -137,6 +146,9 @@ export const FALLBACK_TEMPLES = [
     deity: "माँ महाकाली (जागृत शक्तिपीठ)",
     location_hi: "पावागढ़ पहाड़ी, चंपानेर, पंचमहाल, गुजरात",
     location_en: "Pavagadh Hill, Champaner, Gujarat",
+    short_desc_hi: "पावागढ़ पर्वत शिखर पर स्थित अति प्राचीन शक्तिपीठ, रोपवे एवं भव्य नव-निर्मित शिखर।",
+    short_desc_en: "Ancient mountain Shaktipeeth atop Pavagadh hill with scenic ropeway access.",
+    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
     capacity: 14000,
     current_devotees: 5200,
     occupancy_pct: 37,
@@ -148,7 +160,7 @@ export const FALLBACK_TEMPLES = [
     ropeway_status: {
       is_running: true,
       wait_minutes: 15,
-      status_hi: "उडनखटोला (रोपवे) सामान्य रूप से चालू है (प्रतीक्षा 15 मिनट)",
+      status_hi: "उडनखटोला (रोपवे) चालू है (प्रतीक्षा 15 मिनट)",
       senior_priority: true
     },
     aarti_timings: [
@@ -181,14 +193,78 @@ export const FALLBACK_TEMPLES = [
 export function AppProvider({ children }) {
   const [language, setLanguage] = useState(() => localStorage.getItem('ym_lang') || 'hi');
   const [isBuzurgMode, setIsBuzurgMode] = useState(() => localStorage.getItem('ym_buzurg') === 'true');
+  const [fontSize, setFontSize] = useState(() => localStorage.getItem('ym_font_size') || 'normal');
   const [selectedTempleId, setSelectedTempleId] = useState('somnath');
   const [temples, setTemples] = useState(FALLBACK_TEMPLES);
-  const [activeTab, setActiveTab] = useState('home'); // home, voice, facilities, family, control-room
+  
+  // Navigation: 'landing', 'home', 'voice', 'buzurg', 'darshan', 'guide', 'saathi', 'emergency', 'admin'
+  const [activeTab, setActiveTab] = useState('landing');
+  
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
   const [isSOSOpen, setIsSOSOpen] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [announcements, setAnnouncements] = useState([]);
-  const [familyGroup, setFamilyGroup] = useState(null);
+  
+  // Announcements
+  const [announcements, setAnnouncements] = useState([
+    {
+      id: "ann_1",
+      templeId: "somnath",
+      time: "10:15 AM",
+      title_hi: "वरिष्ठ नागरिकों हेतु विशेष सूचना",
+      title_en: "Notice for Senior Citizens",
+      message_hi: "शंख द्वार (गेट 2) पर वरिष्ठ नागरिकों हेतु व्हीलचेयर एवं छायादार बैठक उपलब्ध है। कतार में न खड़े रहें।",
+      message_en: "Wheelchairs and shaded seating are available at Shankh Gate (Gate 2).",
+      priority: "HIGH"
+    },
+    {
+      id: "ann_2",
+      templeId: "somnath",
+      time: "11:00 AM",
+      title_hi: "मध्याह्न महाआरती दर्शन सूचना",
+      title_en: "Noon Maha Aarti Notice",
+      message_hi: "दोपहर 12:00 बजे की मध्याह्न आरती हेतु कतार प्रवेश 11:30 बजे से आरंभ होगा।",
+      message_en: "Queue entry for 12:00 PM Noon Aarti starts at 11:30 AM.",
+      priority: "NORMAL"
+    }
+  ]);
+
+  // Digital Queue Tokens state
+  const [tokens, setTokens] = useState(() => {
+    const saved = localStorage.getItem('ym_tokens');
+    if (saved) {
+      try { return JSON.parse(saved); } catch(e){}
+    }
+    return [
+      {
+        id: "tok_demo_1",
+        tokenNumber: "SOM-108",
+        templeId: "somnath",
+        devoteeName: "रमेश शर्मा (Ramesh Sharma)",
+        phone: "+91 98765 43210",
+        devoteeCount: 3,
+        isSenior: true,
+        slotTime: "11:30 AM - 12:00 PM",
+        queuePosition: 14,
+        estWaitMinutes: 20,
+        status: "ACTIVE",
+        gate: "Gate 2 (शंख द्वार - सुगम मार्ग)",
+        createdAt: new Date().toLocaleTimeString('hi-IN')
+      }
+    ];
+  });
+
+  const [activeToken, setActiveToken] = useState(() => tokens[0] || null);
+
+  // Saathi Circle / Family Members
+  const [familyMembers, setFamilyMembers] = useState([
+    { id: 'm1', name: 'रमेश जी (पिताजी)', age: 68, relation: 'पिता', status: 'शंख द्वार कतार में', location: 'Gate 2 Queue', battery: 78, isElderly: true, lastSeen: 'अभी-अभी' },
+    { id: 'm2', name: 'शांता देवी (माताजी)', age: 65, relation: 'माता', status: 'व्हीलचेयर सहायता केंद्र पर', location: 'Wheelchair Center', battery: 85, isElderly: true, lastSeen: '2 मिनट पहले' },
+    { id: 'm3', name: 'अमित (बेटा)', age: 36, relation: 'स्वयं', status: 'जूता स्टैंड पर टोकन लेते हुए', location: 'Shoe Stand Counter A', battery: 92, isElderly: false, lastSeen: '1 मिनट पहले' },
+    { id: 'm4', name: 'प्रिया (बहू)', age: 32, relation: 'पत्नी', status: 'शीतल जल सेवा केंद्र के पास', location: 'Water Booth Gate 1', battery: 64, isElderly: false, lastSeen: '3 मिनट पहले' }
+  ]);
+
+  // Emergency Incident Reports
+  const [emergencyAlerts, setEmergencyAlerts] = useState([]);
 
   const synthRef = useRef(null);
 
@@ -213,7 +289,11 @@ export function AppProvider({ children }) {
       });
   }, []);
 
-  // Current selected temple object
+  // Persist tokens
+  useEffect(() => {
+    localStorage.setItem('ym_tokens', JSON.stringify(tokens));
+  }, [tokens]);
+
   const currentTemple = temples.find(t => t.id === selectedTempleId) || temples[0];
 
   // Language switcher
@@ -221,11 +301,7 @@ export function AppProvider({ children }) {
     const next = language === 'hi' ? 'en' : 'hi';
     setLanguage(next);
     localStorage.setItem('ym_lang', next);
-    if (next === 'hi') {
-      speakText("हिंदी भाषा चुनी गई।");
-    } else {
-      speakText("English language selected.");
-    }
+    speakText(next === 'hi' ? "हिंदी भाषा चुनी गई।" : "English language selected.");
   };
 
   // Buzurg Mode toggle
@@ -233,29 +309,38 @@ export function AppProvider({ children }) {
     const next = !isBuzurgMode;
     setIsBuzurgMode(next);
     localStorage.setItem('ym_buzurg', next ? 'true' : 'false');
-    
     if (next) {
-      speakText("बुजुर्ग मोड सक्रिय किया गया है। बड़े अक्षर, सरल भाषा एवं ध्वनि सहायता चालू है।");
+      setActiveTab('buzurg');
+      speakText("बुजुर्ग साथी मोड सक्रिय किया गया है। बड़े अक्षर, सरल भाषा एवं ध्वनि सहायता चालू है।");
     } else {
+      setActiveTab('home');
       speakText("सामान्य मोड सक्रिय।");
     }
   };
 
-  // Voice output function with fallback
+  // Font size adjuster: 'normal' -> 'large' -> 'xlarge'
+  const cycleFontSize = () => {
+    const order = ['normal', 'large', 'xlarge'];
+    const nextIdx = (order.indexOf(fontSize) + 1) % order.length;
+    const next = order[nextIdx];
+    setFontSize(next);
+    localStorage.setItem('ym_font_size', next);
+    const msg = next === 'xlarge' ? "अति विशाल अक्षर आकार" : next === 'large' ? "विशाल अक्षर आकार" : "सामान्य अक्षर आकार";
+    speakText(msg);
+  };
+
+  // Speech output helper
   const speakText = (text, customLang = null) => {
     if (!synthRef.current || !text) return;
 
     try {
-      synthRef.current.cancel(); // Cancel ongoing speech
+      synthRef.current.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       const targetLang = customLang || (language === 'hi' ? 'hi-IN' : 'en-IN');
       utterance.lang = targetLang;
-      
-      // Elderly users need slower, soothing pace
       utterance.rate = isBuzurgMode ? 0.82 : 0.92;
       utterance.pitch = 1.0;
 
-      // Select voice matching language if available
       const voices = synthRef.current.getVoices();
       const hindiVoice = voices.find(v => v.lang.startsWith('hi') || v.name.includes('Hindi'));
       const indianVoice = voices.find(v => v.lang.includes('IN'));
@@ -284,6 +369,60 @@ export function AppProvider({ children }) {
     }
   };
 
+  // Register New Digital Queue Token
+  const registerDigitalToken = (tokenData) => {
+    const prefix = selectedTempleId.slice(0, 3).toUpperCase();
+    const randNum = Math.floor(100 + Math.random() * 900);
+    const newToken = {
+      id: `tok_${Date.now()}`,
+      tokenNumber: `${prefix}-${randNum}`,
+      templeId: selectedTempleId,
+      devoteeName: tokenData.devoteeName,
+      phone: tokenData.phone,
+      devoteeCount: Number(tokenData.devoteeCount) || 1,
+      isSenior: Boolean(tokenData.isSenior),
+      slotTime: tokenData.slotTime || "12:00 PM - 12:30 PM",
+      queuePosition: tokenData.isSenior ? 6 : 28,
+      estWaitMinutes: tokenData.isSenior ? 10 : 35,
+      status: "ACTIVE",
+      gate: tokenData.isSenior ? "Gate 2 (शंख द्वार - वरिष्ठ नागरिक सुगम)" : "Gate 1 (मुख्य दिग्विजय द्वार)",
+      createdAt: new Date().toLocaleTimeString('hi-IN')
+    };
+
+    setTokens(prev => [newToken, ...prev]);
+    setActiveToken(newToken);
+    
+    speakText(`बधाई हो! आपका ई-दर्शन टोकन नंबर ${newToken.tokenNumber} तैयार है। अनुमानित प्रतीक्षा ${newToken.estWaitMinutes} मिनट है।`);
+    return newToken;
+  };
+
+  // Submit Emergency SOS Alert
+  const submitEmergencyAlert = (alertData) => {
+    const newAlert = {
+      id: `ALERT_${Date.now()}`,
+      templeId: selectedTempleId,
+      category: alertData.category || "MEDICAL",
+      devoteeName: alertData.devoteeName || "श्रद्धालु",
+      phone: alertData.phone || "Not provided",
+      gateLocation: alertData.gateLocation || "मंदिर परिसर",
+      description: alertData.description || "त्वरित सहायता अनुरोध",
+      time: new Date().toLocaleTimeString('hi-IN'),
+      status: "DISPATCHED",
+      team: "त्वरित राहत दल (QRT Team 2)"
+    };
+
+    setEmergencyAlerts(prev => [newAlert, ...prev]);
+    
+    fetch('/api/emergency/sos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newAlert)
+    }).catch(() => {});
+
+    speakText("आपातकालीन अलर्ट दर्ज! सुरक्षा एवं मेडिकल टीम आपकी ओर रवाना कर दी गई है। शांत रहें।");
+    return newAlert;
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -291,6 +430,8 @@ export function AppProvider({ children }) {
         toggleLanguage,
         isBuzurgMode,
         toggleBuzurgMode,
+        fontSize,
+        cycleFontSize,
         selectedTempleId,
         setSelectedTempleId,
         currentTemple,
@@ -306,11 +447,17 @@ export function AppProvider({ children }) {
         stopSpeaking,
         announcements,
         setAnnouncements,
-        familyGroup,
-        setFamilyGroup
+        tokens,
+        activeToken,
+        setActiveToken,
+        registerDigitalToken,
+        familyMembers,
+        setFamilyMembers,
+        emergencyAlerts,
+        submitEmergencyAlert
       }}
     >
-      <div className={isBuzurgMode ? "buzurg-mode" : ""}>
+      <div className={`app-root ${isBuzurgMode ? "buzurg-mode" : ""} font-size-${fontSize}`}>
         {children}
       </div>
     </AppContext.Provider>
