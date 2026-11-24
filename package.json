@@ -1,0 +1,11 @@
+{
+  "name": "yatramitra-ai",
+  "version": "1.0.0",
+  "description": "YatraMitra AI - Voice-first pilgrimage companion & crowd management platform",
+  "scripts": {
+    "install:all": "cd client && npm install && cd ../server && npm install",
+    "client": "cd client && npm run dev",
+    "server": "cd server && npm start",
+    "ai": "cd ai_service && python main.py"
+  }
+}

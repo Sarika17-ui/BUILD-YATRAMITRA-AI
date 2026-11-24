@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E36414;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FB8500;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="46" fill="#0F4C5C"/>
+  <circle cx="50" cy="50" r="41" fill="#FAF6EE"/>
+  <path d="M50 15 L54 28 L68 28 L57 37 L61 50 L50 42 L39 50 L43 37 L32 28 L46 28 Z" fill="url(#grad)"/>
+  <!-- Kalash / Temple dome contour -->
+  <path d="M30 68 C30 52, 45 48, 50 42 C55 48, 70 52, 70 68 C70 78, 30 78, 30 68 Z" fill="#0F4C5C"/>
+  <circle cx="50" cy="40" r="4" fill="#D4AF37"/>
+  <rect x="47" y="68" width="6" height="14" fill="#FAF6EE" rx="2"/>
+</svg>
