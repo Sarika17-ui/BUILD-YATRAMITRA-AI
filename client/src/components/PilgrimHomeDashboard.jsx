@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
 import { useApp } from '../context/AppContext';
 import HeroCrowdGauge from './HeroCrowdGauge';
 import AartiScheduleCard from './AartiScheduleCard';
@@ -17,17 +18,17 @@ import {
 } from 'lucide-react';
 
 export default function PilgrimHomeDashboard() {
-  const { 
-    currentTemple, 
-    language, 
-    announcements, 
-    activeToken, 
-    setActiveTab, 
-    setIsVoiceModalOpen, 
-    setIsSOSOpen, 
+  const {
+    currentTemple,
+    announcements,
+    activeToken,
+    setActiveTab,
+    setIsVoiceModalOpen,
+    setIsSOSOpen,
     toggleBuzurgMode,
-    speakText 
+    speakText
   } = useApp();
+  const { language, t } = useLanguage();
 
   return (
     <div className="font-devanagari space-y-6">
@@ -43,7 +44,7 @@ export default function PilgrimHomeDashboard() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#E36414]">
-                    {language === 'hi' ? 'मंदिर प्रशासन आवश्यक सूचना' : 'Official Notice'}
+                    {t('dashboard.officialNotice')}
                   </span>
                   <span className="text-[10px] text-slate-400 font-medium">({announcements[0].time})</span>
                 </div>
@@ -67,7 +68,7 @@ export default function PilgrimHomeDashboard() {
               title="Listen announcement"
             >
               <Volume2 className="w-4 h-4 text-[#E36414]" />
-              <span>{language === 'hi' ? 'सूचना सुनें' : 'Listen'}</span>
+              <span>{t('dashboard.listen')}</span>
             </button>
           </div>
         </div>
@@ -88,7 +89,7 @@ export default function PilgrimHomeDashboard() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider">
-                    आपका ई-दर्शन टोकन सक्रिय है
+                    {t('dashboard.tokenActive')}
                   </span>
                   <span className="text-xs text-slate-500">{activeToken.slotTime}</span>
                 </div>
@@ -105,7 +106,7 @@ export default function PilgrimHomeDashboard() {
               onClick={() => setActiveTab('darshan')}
               className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-xs transition"
             >
-              डिजिटल पास देखें
+              {t('dashboard.viewDigitalPass')}
             </button>
           </div>
         )}

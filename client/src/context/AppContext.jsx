@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { translations } from '../i18n/translations';
 
 const AppContext = createContext();
 
@@ -191,7 +192,20 @@ export const FALLBACK_TEMPLES = [
 ];
 
 export function AppProvider({ children }) {
-  const [language, setLanguage] = useState(() => localStorage.getItem('ym_lang') || 'hi');
+  // Initialize language from localStorage or default to English ('en')
+  const [language, setLanguage] = useState(() => localStorage.getItem('ym_lang') || 'en');
+  const toggleLanguage = () => {
+    const next = language === 'hi' ? 'en' : 'hi';
+    setLanguage(next);
+    localStorage.setItem('ym_lang', next);
+    speakText(next === 'hi' ? "हिंदी भाषा चुनी गई।" : "English language selected.");
+  };
+  // Provide a simple translation helper using the central dictionary
+  const t = (key) => {
+    return (translations[language] && translations[language][key]) || key;
+  };
+
+  // Removed duplicate language state – the provider now defines language once above.
   const [isBuzurgMode, setIsBuzurgMode] = useState(() => localStorage.getItem('ym_buzurg') === 'true');
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('ym_font_size') || 'normal');
   const [selectedTempleId, setSelectedTempleId] = useState('somnath');
@@ -296,14 +310,7 @@ export function AppProvider({ children }) {
 
   const currentTemple = temples.find(t => t.id === selectedTempleId) || temples[0];
 
-  // Language switcher
-  const toggleLanguage = () => {
-    const next = language === 'hi' ? 'en' : 'hi';
-    setLanguage(next);
-    localStorage.setItem('ym_lang', next);
-    speakText(next === 'hi' ? "हिंदी भाषा चुनी गई।" : "English language selected.");
-  };
-
+// Language switcher already defined above
   // Buzurg Mode toggle
   const toggleBuzurgMode = () => {
     const next = !isBuzurgMode;
@@ -426,12 +433,16 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
+          t,
+
+
         language,
         toggleLanguage,
         isBuzurgMode,
         toggleBuzurgMode,
         fontSize,
         cycleFontSize,
+
         selectedTempleId,
         setSelectedTempleId,
         currentTemple,

@@ -1,5 +1,7 @@
 import React from 'react';
+import { useLanguage } from '../i18n/useLanguage';
 import { useApp } from '../context/AppContext';
+
 import { 
   Volume2, 
   VolumeX, 
@@ -37,6 +39,7 @@ export default function Navbar() {
     stopSpeaking,
     speakText
   } = useApp();
+  const { t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-200/60 shadow-sm transition-all duration-200">
@@ -46,7 +49,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
           <span className="tracking-wide">
-            {language === 'hi' ? 'आपकी यात्रा, आपकी भाषा, आपकी सुरक्षा।' : 'Your Pilgrimage, Your Language, Your Safety.'}
+            {t('navbar.header')}
           </span>
         </div>
 
@@ -72,7 +75,7 @@ export default function Navbar() {
               title="Stop audio"
             >
               <VolumeX className="w-3.5 h-3.5" />
-              <span>{language === 'hi' ? 'आवाज रोकें' : 'Stop Audio'}</span>
+              <span>{t('navbar.stopAudio')}</span>
             </button>
           )}
 
@@ -85,7 +88,7 @@ export default function Navbar() {
             className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-2.5 py-0.5 rounded-full font-bold text-xs tracking-wider shadow-sm transition animate-pulse"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>SOS {language === 'hi' ? 'मदद' : 'HELP'}</span>
+            <span>SOS {t('navbar.sosHelp')}</span>
           </button>
         </div>
       </div>
@@ -156,10 +159,10 @@ export default function Navbar() {
             <HeartHandshake className={`w-5 h-5 ${isBuzurgMode ? 'animate-bounce text-white' : 'text-[#E36414]'}`} />
             <div className="text-left hidden sm:block">
               <span className="block text-xs leading-tight">
-                {language === 'hi' ? 'बुजुर्ग मोड' : 'Senior Mode'}
+                {t('navbar.seniorMode')}
               </span>
               <span className={`text-[9px] block leading-none ${isBuzurgMode ? 'text-amber-100 font-bold' : 'text-slate-500'}`}>
-                {isBuzurgMode ? 'सक्रिय है' : 'सरल व बड़े अक्षर'}
+                {isBuzurgMode ? t('navbar.buzurgActive') : t('navbar.buzurgInactive')}
               </span>
             </div>
           </button>

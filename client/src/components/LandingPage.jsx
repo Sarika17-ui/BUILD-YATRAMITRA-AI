@@ -1,4 +1,5 @@
-import React from 'react';
+import { useLanguage } from '../i18n/useLanguage';
+
 import { useApp } from '../context/AppContext';
 import { 
   Mic, 
@@ -21,15 +22,14 @@ import {
 } from 'lucide-react';
 
 export default function LandingPage() {
-  const { 
-    language, 
-    temples, 
-    setSelectedTempleId, 
-    setActiveTab, 
-    setIsVoiceModalOpen, 
-    setIsSOSOpen,
+  const { language, t } = useLanguage();
+  const {
+    temples,
+    setSelectedTempleId,
+    setActiveTab,
+    setIsVoiceModalOpen,
     toggleBuzurgMode,
-    speakText 
+    speakText
   } = useApp();
 
   const handleSelectAndExplore = (templeId) => {
